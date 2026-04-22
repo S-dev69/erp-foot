@@ -45,7 +45,7 @@ export default function JoueursList() {
         headers: { 'Content-Type': 'application/ld+json' } 
       });
 
-      // ajoute du nouveau joueur 
+      // ajout du nouveau joueur 
       setJoueurs([response.data, ...joueurs]);
       
       setNouveauJoueur({ nom: '', prenom: '', poste: 'Milieu' });
@@ -54,6 +54,20 @@ export default function JoueursList() {
       setFormError("Erreur lors de la création du joueur.");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Suppression d'un joueur via l'API et mise à jour de l'état local
+  const handleDelete = async (id: number) => {
+    // Sécurité UX : demande de confirmation
+    if (!window.confirm('Supprimer définitivement ce joueur ?')) return;
+
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/joueurs/${id}`);
+      setJoueurs(joueurs.filter(j => j.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("Erreur : Ce joueur a peut-être des données liées (licence, match) qui bloquent la suppression.");
     }
   };
 
@@ -116,13 +130,23 @@ export default function JoueursList() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {joueurs.map((joueur) => (
-          <div key={joueur.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold text-gray-900">
-              {joueur.prenom} <span className="uppercase">{joueur.nom}</span>
-            </h3>
-            <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-              ⚽ {joueur.poste}
-            </span>
+          <div key={joueur.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative overflow-hidden group flex justify-between items-start">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">
+                {joueur.prenom} <span className="uppercase">{joueur.nom}</span>
+              </h3>
+              <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                ⚽ {joueur.poste}
+              </span>
+            </div>
+            
+            <button 
+              onClick={() => handleDelete(joueur.id)}
+              className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-pointer"
+              title="Supprimer ce joueur"
+            >
+              🗑️
+            </button>
           </div>
         ))}
         
