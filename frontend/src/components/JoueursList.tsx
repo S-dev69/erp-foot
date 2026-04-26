@@ -128,32 +128,53 @@ export default function JoueursList() {
         </form>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {joueurs.map((joueur) => (
-          <div key={joueur.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative overflow-hidden group flex justify-between items-start">
-            <div>
-              <h3 className="text-xl font-bold text-gray-900">
-                {joueur.prenom} <span className="uppercase">{joueur.nom}</span>
-              </h3>
-              <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
-                ⚽ {joueur.poste}
-              </span>
-            </div>
-            
-            <button 
-              onClick={() => handleDelete(joueur.id)}
-              className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-2 cursor-pointer"
-              title="Supprimer ce joueur"
-            >
-              🗑️
-            </button>
-          </div>
-        ))}
-        
-        {joueurs.length === 0 && (
-          <p className="col-span-full text-gray-500 italic">Aucun joueur trouvé dans la base de données.</p>
-        )}
-      </div>
+      {/* Data Table structurée (Standard SAP/Dolibarr) */}
+    <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <table className="w-full text-left border-collapse">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Identité du Joueur</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Poste occupé</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {joueurs.map((joueur) => (
+            <tr key={joueur.id} className="hover:bg-gray-50 transition-colors group">
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="font-bold text-gray-900 leading-tight">{joueur.prenom} {joueur.nom.toUpperCase()}</div>
+                <div className="text-[10px] text-gray-400 font-mono">UID: {joueur.id}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-tight border ${
+                  joueur.poste === 'Gardien' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                  joueur.poste === 'Défenseur' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                  joueur.poste === 'Milieu' ? 'bg-green-50 text-green-700 border-green-200' : 
+                  'bg-red-50 text-red-700 border-red-200'
+                }`}>
+                  {joueur.poste}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-right">
+                <button 
+                  onClick={() => handleDelete(joueur.id)}
+                  className="text-gray-300 hover:text-red-600 p-2 transition-colors cursor-pointer"
+                  title="Révoquer le joueur"
+                >
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      {joueurs.length === 0 && (
+        <div className="p-12 text-center text-gray-400 text-sm italic">
+          Aucun enregistrement trouvé dans la base de données actuelle.
+        </div>
+      )}
+    </div>
     </div>
   );
 }
